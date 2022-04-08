@@ -18,7 +18,7 @@ X_test_tsk1 = df.loc[:, ind]
 # plt.scatter(X_test_tsk1.loc[:, 'BaseExcess'], X_train_tsk1.loc[:, 'Fibrinogen'], c='r', )
 # plt.show()
 
-labels = np.asarray(labels.loc[:, 'LABEL_BaseExcess':'LABEL_EtCO2'])
+labels_arr = np.asarray(labels.loc[:, 'LABEL_BaseExcess':'LABEL_EtCO2'])
 total_features = X_train_tsk1.shape[1]
 
 # Imputer
@@ -35,9 +35,8 @@ new_X_train = np.swapaxes(np.asarray(np.array_split(X_train_imp, split_size, axi
 new_X_test = np.swapaxes(np.asarray(np.array_split(X_test_imp, split_size, axis=0)), 0, 2)
 
 X_train_reshape = new_X_train.reshape(-1, new_X_train.shape[-1])
-labels_reshape = labels.reshape(X_train_reshape.shape[0])
+labels_reshape = labels_arr.reshape(X_train_reshape.shape[0])
 X_test_reshape = new_X_test.reshape(-1, new_X_test.shape[-1])
-
 # print(X_train_reshape.shape)
 # print(labels_reshape.shape)
 
@@ -45,7 +44,7 @@ X_test_reshape = new_X_test.reshape(-1, new_X_test.shape[-1])
 med_test_svm = SVC(kernel='sigmoid')
 med_test_svm.fit(X_test_reshape, labels_reshape)
 y_pred_tsk1 = med_test_svm.predict(X_test_reshape)
-# print(y_pred_tsk1)
+# print(y_pred_tsk1.shape)
 
 
 # for i in range(total_features):
