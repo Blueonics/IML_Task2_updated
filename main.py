@@ -16,19 +16,12 @@ ind = ['pid', 'BaseExcess', 'Fibrinogen', 'AST', 'Alkalinephos', 'Bilirubin_tota
 labels = labels.loc[:, 'LABEL_BaseExcess':'LABEL_EtCO2']
 # index_list = labels.index[(labels == 0).all(axis=1)].tolist()
 index_list = labels.index[labels.values.sum(axis=1) == 0].tolist()
-
-# labels = labels.loc[~(labels == 0).all(axis=1)]
 # labels = labels.loc[labels.values.sum(axis=1) != 0]
 labels_sorted = np.asarray(labels)
-# index_list = np.array(np.where(np.all(labels_sorted == 0, axis=1)))
-
-# print(len(index_list))
-
-# print(labels_sorted.shape)
 
 
 # Imputer
-imputer = IterativeImputer(missing_values=np.nan, initial_strategy='mean')
+imputer = IterativeImputer(missing_values=np.nan, initial_strategy='median')
 df_tsk1 = df.loc[:, ind]
 imputer.fit(df_tsk1)
 df_tsk1 = pd.DataFrame(imputer.fit_transform(df_tsk1))
@@ -48,19 +41,22 @@ X_test_tsk1 = np.asarray(helper.transform_list(rand_indx, test_chunks, X_test_ts
 
 ### X_train_tsk1 = X_train_tsk1.reshape(-1, X_train_tsk1.shape[-1])
 
-# 18955 * 10
-med_test_svm = SVC(kernel='sigmoid', gamma='auto')
+# # 18955 * 5 * 10
+med_test_svm = SVC(kernel='sigmoid', gamma='auto', probability=True, C=1)
 
-labels_pred = np.ones((X_test_tsk1.shape[0], labels_sorted.shape[1]))
+labels_one = np.ones((X_test_tsk1.shape[0], labels_sorted.shape[1]))
+labels_zero = np.ones((X_test_tsk1.shape[0], labels_sorted.shape[1]))
+ # 18995, 5, 10
 
+# print(X_train_tsk1[:, :, 0].shape)
+# Method 2
+for i in range(X_train_tsk1.shape[2]):
+    med_test_svm.fit(X_train_tsk1[:, :, i], labels_sorted[:, i])
+    labels_zero[:, i] = med_test_svm.predict_proba(X_test_tsk1[:, :, i])[:, 0]
+    labels_one[:, i] = med_test_svm.predict_proba(X_test_tsk1[:, :, i])[:, 1]
 
-X_train_tsk1 = np.swapaxes(X_train_tsk1, 1, 2) # 18995, 5, 10
+#         # bug when we have all 1's labels or 0's labels
+# print(labels_zero[1,:])
 
-# Method 1
-for i in range(X_train_tsk1.shape[0]):
-    if i in index_list:
-        pass
-    else:
-        med_test_svm.fit(X_train_tsk1[i, :, :], labels_sorted[i, :])
-        #labels_pred = med_test_svm.predict(np.transpose(X_test_tsk1[i, :, :]))
-        # bug when we have all 1's labels or 0's labels
+# [0.73177289 0.92629629 0.76099499 0.76377979 0.75994957 0.79959082
+#  0.8998262  0.76630676 0.96553518 0.93355658]
