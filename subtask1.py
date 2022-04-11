@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 import helper
-
+import csv
 
 def subtask1_predict(df, df_test, labels):
     # subtask 1
@@ -56,6 +56,9 @@ def subtask1_predict(df, df_test, labels):
     # print(labels_zero[1,:])
     # [0.73177289 0.92629629 0.76099499 0.76377979 0.75994957 0.79959082
     #  0.8998262  0.76630676 0.96553518 0.93355658]
+    f = open('C:/Users/Lannan Jiang/PycharmProjects/IML_Task2/submission.csv', 'w', newline='')
+    writer = csv.writer(f)
+    writer.writerows(labels_one)
 
     return None
 
