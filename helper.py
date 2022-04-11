@@ -22,7 +22,7 @@ def transform_list(dictionary, a_list):
     for key in dictionary.keys():
         curr_rows = dictionary.get(key)
         # reduce_rows size: 5x37 and drop ID column
-        a_list.append(curr_rows)
+        a_list.append(curr_rows[:, 1:])
     return a_list
 
 
