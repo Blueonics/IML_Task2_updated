@@ -18,11 +18,18 @@ def random_gen(start, stop, n_rows):
     return rand_list
 
 
-def transform_list(rand_indx, dictionary, a_list):
+def transform_list(dictionary, a_list):
+    for key in dictionary.keys():
+        curr_rows = dictionary.get(key)
+        # reduce_rows size: 5x37 and drop ID column
+        a_list.append(curr_rows)
+    return a_list
+
+
+def transform_rand_list(rand_indx, dictionary, a_list):
     for key in dictionary.keys():
         curr_rows = dictionary.get(key)
         # reduce_rows size: 5x37 and drop ID column
         reduce_rows = curr_rows[rand_indx, 1:]
         a_list.append(reduce_rows)
     return a_list
-
