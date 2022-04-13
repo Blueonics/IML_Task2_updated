@@ -7,6 +7,7 @@ from sklearn.impute import IterativeImputer
 import helper
 import csv
 
+
 def subtask1_predict(df, df_test, labels):
     # subtask 1
     ind_tsk1 = ['pid', 'BaseExcess', 'Fibrinogen', 'AST', 'Alkalinephos', 'Bilirubin_total', 'Lactate', 'TroponinI',
@@ -34,7 +35,7 @@ def subtask1_predict(df, df_test, labels):
     test_chunks = helper.make_chunks(test_tsk1.values)
 
     down_size = 5
-    rand_indx = helper.random_gen(0, 9, down_size)
+    rand_indx = helper.random_gen(0, 4, down_size)
     X_train_tsk1, X_test_tsk1 = list(), list()
     X_train_tsk1 = np.asarray(helper.transform_rand_list(rand_indx, train_chunks, X_train_tsk1))
     X_test_tsk1 = np.asarray(helper.transform_rand_list(rand_indx, test_chunks, X_test_tsk1))

@@ -1,7 +1,9 @@
 import numpy as np
 import random
 from random import seed
-
+from sklearn.model_selection import RepeatedKFold
+from tensorflow.keras import Sequential
+from keras import layers
 
 def make_chunks(data):
     chunks = dict()
@@ -33,3 +35,12 @@ def transform_rand_list(rand_indx, dictionary, a_list):
         reduce_rows = curr_rows[rand_indx, 1:]
         a_list.append(reduce_rows)
     return a_list
+
+
+def get_nn(num_in, num_out):
+    NN = Sequential()
+    NN.add(layers.Dense(16, input_dim=num_in, kernel_initializer='he_uniform', activation='relu'))
+    NN.add(layers.Dense(num_out, activation='sigmoid'))
+    NN.compile(loss='binary_crossentropy', optimizer='adam')
+    return NN
+
