@@ -23,7 +23,7 @@ def subtask3_predict(df, df_test, labels):
     df_tsk3 = pd.DataFrame(imputer.fit_transform(df_tsk3))
     test_tsk3 = df_test.loc[:, ind_tsk3]
     test_tsk3 = pd.DataFrame(imputer.fit_transform(test_tsk3))
-    test_ID = df_test.loc[:, 0]
+    # test_ID = df_test.loc[:, 0]
 
     train_chunks = helper.make_chunks(df_tsk3.values)
     test_chunks = helper.make_chunks(test_tsk3.values)
@@ -36,14 +36,10 @@ def subtask3_predict(df, df_test, labels):
 
     y_pred_tsk3 = np.ones((X_test_tsk3.shape[0], y_tsk3.shape[1]))
 
-    print(y_pred_tsk3.shape)
+    # print(y_pred_tsk3.shape)
     for i in range(X_train_tsk3.shape[2]):
         reg_model.fit(X_train_tsk3[:, :, i], y_tsk3[:, i])
         y_pred_tsk3[:, i] = reg_model.predict(X_test_tsk3[:, :, i])
 
-    f = open('C:/Users/Lannan Jiang/PycharmProjects/IML_Task2/submission.csv', 'w', newline='')
-    writer = csv.writer(f)
-    writer.writerows()
-    writer.writerows(y_pred_tsk3)
+    return y_pred_tsk3
 
-    return None

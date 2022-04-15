@@ -15,10 +15,6 @@ def subtask2_predict(df, df_test, labels):
     labels_tsk2 = np.asarray(labels_tsk2)
     labels_sorted_tsk2 = labels_tsk2.reshape((labels_tsk2.shape[0], 1))
 
-    # test_ind = ['pid', 'BaseExcess', 'Fibrinogen']
-    # df = df.loc[:, test_ind]
-    # df_test = df_test.loc[:, test_ind]
-
     # Imputer
     imputer = IterativeImputer(missing_values=np.nan, initial_strategy='median')
     imputer.fit(df)
@@ -52,12 +48,11 @@ def subtask2_predict(df, df_test, labels):
     num_in, num_out = X_train_pca.shape[1], 1
     model = helper.get_nn(num_in, num_out)
     model.fit(X_train_pca, labels_sorted_tsk2)
-    y_pred = model.predict(X_test_pca)
-    y_pred = y_pred.round()
-
+    labels_two = model.predict(X_test_pca)
+    # y_pred = y_pred.round()
     # print(y_pred[100:200, 0])
-    print(y_pred.shape)
-    return None
+
+    return labels_two
 
 
 

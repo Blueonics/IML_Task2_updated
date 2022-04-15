@@ -2,12 +2,14 @@ import numpy as np
 import random
 from random import seed
 from sklearn.model_selection import RepeatedKFold
-from tensorflow.keras import Sequential
 from keras import layers
+from keras import Sequential
+
 
 def make_chunks(data):
     chunks = dict()
     IDs = np.unique(data[:, 0])
+    # print("check ID ", IDs)
     for ID in IDs:
         sel = data[:, 0] == ID
         chunks[ID] = data[sel, :]
