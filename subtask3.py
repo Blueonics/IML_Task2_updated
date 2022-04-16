@@ -10,7 +10,7 @@ from sklearn.multioutput import MultiOutputRegressor
 
 def subtask3_predict(df, df_test, labels):
     # subtask 3
-    ind_tsk3 = [ 'LABEL_RRate', 'LABEL_ABPm', 'LABEL_SpO2', 'LABEL_Heartrate']
+    ind_tsk3 = ['LABEL_RRate', 'LABEL_ABPm', 'LABEL_SpO2', 'LABEL_Heartrate']
 
     labels = np.asarray(labels.loc[:, ind_tsk3])
     train_chunks = helper.make_chunks(df.values)
@@ -24,12 +24,12 @@ def subtask3_predict(df, df_test, labels):
     X_test_tsk3 = X_test_tsk3.mean(axis=1)
 
     rig_model = linear_model.Ridge(alpha=0.1)
-    multilabel_classifier = MultiOutputRegressor(rig_model, n_jobs=-1)
+    multilabel_regressor = MultiOutputRegressor(rig_model, n_jobs=-1)
 
     # y_pred_tsk3 = np.ones((X_test_tsk3.shape[0], labels.shape[1]))
-    multilabel_classifier.fit(X_train_tsk3, labels)
+    multilabel_regressor.fit(X_train_tsk3, labels)
 
-    y_pred_tsk3 = multilabel_classifier.predict(X_test_tsk3)
+    y_pred_tsk3 = multilabel_regressor.predict(X_test_tsk3)
     y_pred_tsk3 = np.asarray(y_pred_tsk3)
     print(y_pred_tsk3.shape)
 

@@ -2,8 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
-from collections import Counter
-from imblearn.over_sampling import SMOTE
+from sklearn.utils import resample
 from subtask1 import subtask1_predict
 from subtask2 import subtask2_predict
 from subtask3 import subtask3_predict
@@ -24,21 +23,52 @@ header = ['pid', 'LABEL_BaseExcess', 'LABEL_Fibrinogen', 'LABEL_AST', 'LABEL_Alk
 PID = np.asarray(df_test.loc[:, 'pid'].unique())
 keys = PID.reshape((PID.shape[0], 1))
 
+# temporary
+df = df.loc[:, ['pid','AST','Alkalinephos']]
+df_test = df_test.loc[:, ['pid', 'AST','Alkalinephos']]
+labels = labels.loc[:, ['pid','LABEL_AST', 'LABEL_Alkalinephos']]
+
+#
+# labels = labels.drop(['pid',], axis=1)
+# df = df.drop(['pid'], axis=1)
+# df_test = df_test.drop(['pid'], axis=1)
+#
+# print(len(labels))
+#
+# num_O = len(labels[labels.values == 0])
+# num_1 = len(labels[labels.values == 1])
+# print("nm zero", num_O) #4361
+# print("nm one", num_1) #1279
+#
+# zeros = labels[labels.values == 0]
+# ones = labels[labels.values == 1]
+#
+# zero_downsample = resample(zeros, replace=True, n_samples=num_1, random_state=42)
+#
+# print("zero downsample shape", zero_downsample.shape) # 6496
+#
+# labels = pd.concat([zero_downsample, ones])
+# # print("one shape", ones)
+# # print("zero shape", zeros)
+# print(len(labels))
+
 # Impute
-imputer = IterativeImputer(missing_values=np.nan, initial_strategy='median')
+imputer = IterativeImputer(missing_values=np.nan, initial_strategy='mean')
 imputer.fit(df)
 df = pd.DataFrame(imputer.fit_transform(df))
 df_test = pd.DataFrame(imputer.fit_transform(df_test))
+
 labels = labels.drop(['pid'], axis=1)
+# print(labels)
 
 labels_one = subtask1_predict(df, df_test, labels)
-labels_two = subtask2_predict(df, df_test, labels)
-y_pred_three = subtask3_predict(df, df_test, labels)
+# labels_two = subtask2_predict(df, df_test, labels)
+# y_pred_three = subtask3_predict(df, df_test, labels)
 
 #
 # labels_one = np.ones((12664, 10))
-# labels_two = np.ones((12664, 1))
-# y_pred_three = np.ones((12664, 4))
+labels_two = np.ones((12664, 1))
+y_pred_three = np.ones((12664, 4))
 
 
 arr1 = np.concatenate((labels_one, labels_two), axis=1)
