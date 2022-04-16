@@ -1,12 +1,10 @@
 import numpy as np
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
+from sklearn.model_selection import RepeatedKFold
 import helper
-import csv
 from sklearn.decomposition import PCA
+from imblearn.over_sampling import SMOTE
+from sklearn.metrics import accuracy_score
 import pandas as pd
-
-# multilabel classification
 
 
 def subtask2_predict(df, df_test, labels):
@@ -15,15 +13,8 @@ def subtask2_predict(df, df_test, labels):
     labels_tsk2 = np.asarray(labels_tsk2)
     labels_sorted_tsk2 = labels_tsk2.reshape((labels_tsk2.shape[0], 1))
 
-    # Imputer
-    imputer = IterativeImputer(missing_values=np.nan, initial_strategy='median')
-    imputer.fit(df)
-
-    df_tsk2 = pd.DataFrame(imputer.transform(df))
-    test_tsk2 = pd.DataFrame(imputer.transform(df_test))
-
-    train_chunks = helper.make_chunks(df_tsk2.values)
-    test_chunks = helper.make_chunks(test_tsk2.values)
+    train_chunks = helper.make_chunks(df.values)
+    test_chunks = helper.make_chunks(df_test.values)
 
     #
     X_train_tsk2, X_test_tsk2 = list(), list()
@@ -37,7 +28,7 @@ def subtask2_predict(df, df_test, labels):
     # print(X_train_flatten.shape)
     # print(X_test_flatten.shape)
 
-    nn_pca = PCA(n_components=5)
+    nn_pca = PCA(n_components=6)
     X_train_pca = nn_pca.fit_transform(X_train_flatten)
     X_test_pca = nn_pca.transform(X_test_flatten)
 
@@ -45,12 +36,24 @@ def subtask2_predict(df, df_test, labels):
     # print(X_test_pca.shape)
 
     # DNN
+    # cv = RepeatedKFold(n_splits=10, n_repeats=1, random_state=1)
+    # num_in, num_out = X_train_pca.shape[1], 1
+    # accuracy = list()
+    #
+    # for train_idx, test_idx in cv.split(X_train_pca):
+    #     X_train, X_test = X_train_pca[train_idx], X_train_pca[test_idx]
+    #     labels_train, labels_test = labels[train_idx], labels[test_idx]
+    #     model = helper.get_nn(num_in, num_out)
+    #     model.fit(X_train, labels_train, epochs=100)
+    #     labels_pred = model.predict(X_test)
+    #     temp_check = accuracy_score(labels, labels_pred)
+    #     accuracy.append(temp_check)
+
+    # print(np.mean(accuracy))
     num_in, num_out = X_train_pca.shape[1], 1
     model = helper.get_nn(num_in, num_out)
     model.fit(X_train_pca, labels_sorted_tsk2)
     labels_two = model.predict(X_test_pca)
-    # y_pred = y_pred.round()
-    # print(y_pred[100:200, 0])
 
     return labels_two
 
