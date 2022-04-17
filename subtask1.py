@@ -1,52 +1,49 @@
 import numpy as np
 import pandas as pd
 from sklearn.svm import SVC
-from imblearn.pipeline import Pipeline
-import matplotlib.pyplot as plt
-from sklearn.multioutput import MultiOutputClassifier
-from sklearn.multiclass import OneVsRestClassifier
+from sklearn.decomposition import PCA
 import helper
 import csv
 
 
 def subtask1_predict(df, df_test, labels):
-    # ind_tsk1 = ['pid', 'BaseExcess', 'Fibrinogen', 'AST', 'Alkalinephos', 'Bilirubin_total', 'Lactate', 'TroponinI',
-    #             'SaO2',
-    #             'Bilirubin_direct', 'EtCO2']
-
-    # labels = labels.loc[:, 'LABEL_EtCO2']
-    # df = df.loc[:, ind_tsk1]
-    # df_test = df_test.loc[:, ind_tsk1]
+    labels = labels.loc[:, ['LABEL_BaseExcess', 'LABEL_Fibrinogen', 'LABEL_AST', 'LABEL_Alkalinephos', 'LABEL_Bilirubin_total',
+          'LABEL_Lactate',
+          'LABEL_TroponinI', 'LABEL_SaO2', 'LABEL_Bilirubin_direct', 'LABEL_EtCO2']]
 
     labels_sorted_tsk1 = np.asarray(labels)
-    labels_sorted_tsk1.astype('int')
+    X_train_tsk1 = np.asarray(df)[:, 2:]
+    X_test_tsk1 = np.asarray(df_test)[:, 2:]
+    num_samp_train = int(X_train_tsk1.shape[0]/12)
+    num_samp_test = int(X_test_tsk1.shape[0]/12)
 
-    print(labels_sorted_tsk1.shape)
-    # print(labels_sorted_tsk1)
-    # # len: 18995
+    X_train_tsk1 = X_train_tsk1.reshape((num_samp_train, 12, -1))
+    X_test_tsk1 = X_test_tsk1.reshape((num_samp_test, 12, -1))
+    print(X_train_tsk1.shape) # 18995x12x35
 
-    train_chunks = helper.make_chunks(df.values)
-    test_chunks = helper.make_chunks(df_test.values)
+    X_train_tsk1 = helper.imputer(X_train_tsk1, df)
+    X_test_tsk1 = helper.imputer(X_test_tsk1, df_test)
 
-    # down_size = 5
-    # rand_indx = helper.random_gen(0, 5, down_size)
-    X_train_tsk1, X_test_tsk1 = list(), list()
-    X_train_tsk1 = np.asarray(helper.transform_list(train_chunks, X_train_tsk1))
-    X_test_tsk1 = np.asarray(helper.transform_list(test_chunks, X_test_tsk1))
+    X_train_norm, mean_train, std_train = helper.batch_norm(X_train_tsk1)
+    X_test_norm = helper.batch_norm(X_test_tsk1, mean_train, std_train)
 
-    X_train_tsk1 = X_train_tsk1.mean(axis=1)
-    X_test_tsk1 = X_test_tsk1.mean(axis=1)
+    #  PCA
+    X_train_flatten = X_train_tsk1.reshape(X_train_tsk1.shape[0], X_train_tsk1.shape[1] * X_train_tsk1.shape[2])
+    X_test_flatten = X_test_tsk1.reshape(X_test_tsk1.shape[0], X_test_tsk1.shape[1] * X_test_tsk1.shape[2])
 
-    print(X_test_tsk1.shape)
+    nn_pca = PCA(n_components=140)
+    nn_pca.fit(X_train_flatten)
+    X_train_tsk1 = nn_pca.transform(X_train_flatten)
+    X_test_tsk1 = nn_pca.transform(X_test_flatten)
 
-    weights = {0:1.0, 1:50.0}
-    med_test_svm = SVC(kernel='sigmoid', class_weight=weights, probability=True, gamma='scale', C=0.1)
-    multilabel_classifier = MultiOutputClassifier(med_test_svm, n_jobs=-1)
-    multilabel_classifier.fit(X_train_tsk1, labels_sorted_tsk1)
+    med_test_svm = SVC(kernel='rbf', probability=True)
 
-    labels_one = multilabel_classifier.predict_proba(X_test_tsk1)
-    labels_one = np.transpose(np.asarray(labels_one)[:, :, 1]) # shape 10, 12664, 2
-    print(labels_one.shape)
+    labels_one = np.ones((12664, 10))
+    for i in range(labels_sorted_tsk1.shape[0]):
+        print("index ", i)
+        curr_label = labels_sorted_tsk1[:, i]
+        med_test_svm.fit(X_train_tsk1, curr_label)
+        labels_one[:, i] = med_test_svm.predict_proba(X_test_tsk1)[:, -1]
+        print(labels_one[:,i])
+
     return labels_one
-
-

@@ -31,7 +31,7 @@ def subtask3_predict(df, df_test, labels):
 
     y_pred_tsk3 = multilabel_regressor.predict(X_test_tsk3)
     y_pred_tsk3 = np.asarray(y_pred_tsk3)
-    print(y_pred_tsk3.shape)
+    # print(y_pred_tsk3.shape)
 
     return y_pred_tsk3
 

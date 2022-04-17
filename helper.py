@@ -1,42 +1,33 @@
 import numpy as np
-import random
-from random import seed
-from sklearn.model_selection import RepeatedKFold
 from keras import layers
 from keras import Sequential
 
 
-def make_chunks(data):
-    chunks = dict()
-    IDs = np.unique(data[:, 0])
-    # print("check ID ", IDs)
-    for ID in IDs:
-        sel = data[:, 0] == ID
-        chunks[ID] = data[sel, :]
-    return chunks
+def imputer(df_arr, df):
+    df_avg = df.mean()
+    for p_idx in range(df_arr.shape[0]):
+        for f_idx in range(df_arr.shape[2]):
+            feature_cols = df_arr[p_idx, :, f_idx]
+            nan_flag = np.where(np.isnan(feature_cols))[0]
+            all_nan = (nan_flag.shape[0] == 12)
+            no_nan = (nan_flag.shape[0] == 0)
+            if all_nan:
+                df_arr[p_idx, :, f_idx] = df_avg[f_idx]
+            elif no_nan:
+                df_arr[p_idx, :, f_idx] = feature_cols
+            else:
+                nan_avg = np.mean(feature_cols[np.where(np.isnan(feature_cols)==False)])
+                for index in nan_flag:
+                    df_arr[p_idx, index, f_idx] = nan_avg
+    return df_arr
 
 
-def random_gen(start, stop, n_rows):
-    seed(1)
-    rand_list = random.sample(range(start, stop), n_rows)
-    return rand_list
-
-
-def transform_list(dictionary, a_list):
-    for key in dictionary.keys():
-        curr_rows = dictionary.get(key)
-        # reduce_rows size: 5x37 and drop ID column
-        a_list.append(curr_rows[:, 1:])
-    return a_list
-
-
-def transform_rand_list(rand_indx, dictionary, a_list):
-    for key in dictionary.keys():
-        curr_rows = dictionary.get(key)
-        # reduce_rows size: 5x37 and drop ID column
-        reduce_rows = curr_rows[rand_indx, 1:]
-        a_list.append(reduce_rows)
-    return a_list
+def batch_norm(data, mean = None, std = None):
+        if mean is not None and std is not None:
+            return (data - mean) / std
+        mean = np.mean(data, axis=0)
+        std = np.std(data, axis=0)
+        return (data - mean) / std, mean, std
 
 
 def get_nn(num_in, num_out):
@@ -45,4 +36,5 @@ def get_nn(num_in, num_out):
     NN.add(layers.Dense(num_out, activation='sigmoid'))
     NN.compile(loss='binary_crossentropy', optimizer='adam')
     return NN
+
 
