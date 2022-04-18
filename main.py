@@ -8,6 +8,7 @@ import helper
 from zipfile import ZipFile
 import csv
 
+
 df = pd.read_csv('C:/Users/Lannan Jiang/PycharmProjects/IML_Task2/train_features.csv')
 df_test = pd.read_csv('C:/Users/Lannan Jiang/PycharmProjects/IML_Task2/test_features.csv')
 labels = pd.read_csv('C:/Users/Lannan Jiang/PycharmProjects/IML_Task2/train_labels.csv')
@@ -75,4 +76,4 @@ for i in lut:
     new_Writer.writerow(['{:.3f}'.format(x) for x in i])
 
 with ZipFile('C:/Users/Lannan Jiang/PycharmProjects/IML_Task2/submission.zip', 'w') as zip:
-    zip.write('submission/submission.csv')
+    zip.write('submission.csv')
