@@ -8,16 +8,16 @@ from sklearn import linear_model
 def subtask3_predict(X_train_procs, X_test_procs, labels):
     ind_tsk3 = ['LABEL_RRate', 'LABEL_ABPm', 'LABEL_SpO2', 'LABEL_Heartrate']
     labels = np.asarray(labels.loc[:, ind_tsk3])
-
+    print(labels.shape)
     regressor = SVR(kernel='rbf', gamma='auto')
 
-    predictions = np.ones((12664, 10))
+    predictions = np.ones((12664, labels.shape[1]))
     for i in range(labels.shape[1]):
-        print("index ", i)
+        print("subtask 3 index ", i)
         curr_label = labels[:, i]
         regressor.fit(X_train_procs, curr_label)
         predictions[:, i] = regressor.predict(X_test_procs)
-        print(predictions[:, i])
-
+        # print(predictions[:, i])
+    print(predictions.shape)
     return predictions
 

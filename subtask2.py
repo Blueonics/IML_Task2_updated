@@ -13,6 +13,7 @@ def subtask2_predict(X_train_procs, X_test_procs, labels):
     model = helper.get_nn(num_in, num_out)
     model.fit(X_train_procs, labels_sorted_tsk2)
     labels_two = model.predict(X_test_procs)
+    print(labels_two.shape)
     return labels_two
 
 

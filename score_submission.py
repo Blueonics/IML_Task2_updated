@@ -13,11 +13,11 @@ def get_score(df_true, df_submission):
     df_true = df_true.sort_values('pid')
     task1 = np.mean([metrics.roc_auc_score(df_true[entry], df_submission[entry]) for entry in TESTS])
     # task2 = metrics.roc_auc_score(df_true['LABEL_Sepsis'], df_submission['LABEL_Sepsis'])
-    # task3 = np.mean([0.5 + 0.5 * np.maximum(0, metrics.r2_score(df_true[entry], df_submission[entry])) for entry in VITALS])
+    task3 = np.mean([0.5 + 0.5 * np.maximum(0, metrics.r2_score(df_true[entry], df_submission[entry])) for entry in VITALS])
     # score = np.mean([task1, task2, task3])
     # print(task1, task2, task3)
     score = task1
-    print(task1)
+    print(task3)
     return score
 
 

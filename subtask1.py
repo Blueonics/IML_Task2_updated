@@ -18,10 +18,10 @@ def subtask1_predict(X_train_procs, X_test_procs, labels):
     labels_one = np.ones((12664, 10))
 
     for i in range(labels_sorted_tsk1.shape[1]):
-        print("index ", i)
+        print("subtask 1 index ", i)
         curr_label = labels_sorted_tsk1[:, i]
         med_test_svm.fit(X_train_procs, curr_label)
         labels_one[:, i] = med_test_svm.predict_proba(X_test_procs)[:, -1]
         print(labels_one[:,i])
-
+    print(labels_one.shape)
     return labels_one

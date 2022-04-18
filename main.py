@@ -47,6 +47,8 @@ labels_one = subtask1_predict(X_train_procs, X_test_procs, labels)
 labels_two = subtask2_predict(X_train_procs, X_test_procs, labels)
 y_pred_three = subtask3_predict(X_train_procs, X_test_procs, labels)
 
+# labels_one = np.ones((12))
+
 extract_ID = np.array(df_test)
 val, indices = np.unique(extract_ID[:, 0], return_index=True)
 keys = np.asarray(extract_ID[:, 0][np.sort(indices)]).reshape((12664, 1))
