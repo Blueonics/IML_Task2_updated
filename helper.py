@@ -33,6 +33,7 @@ def batch_norm(data, mean = None, std = None):
 def get_nn(num_in, num_out):
     NN = Sequential()
     NN.add(layers.Dense(16, input_dim=num_in, kernel_initializer='he_uniform', activation='relu'))
+    NN.add(layers.Dense(8, kernel_initializer='he_uniform', activation='relu'))
     NN.add(layers.Dense(num_out, activation='sigmoid'))
     NN.compile(loss='binary_crossentropy', optimizer='adam')
     return NN

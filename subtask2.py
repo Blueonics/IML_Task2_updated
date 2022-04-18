@@ -11,9 +11,9 @@ def subtask2_predict(X_train_procs, X_test_procs, labels):
 
     num_in, num_out = X_train_procs.shape[1], 1
     model = helper.get_nn(num_in, num_out)
-    model.fit(X_train_procs, labels_sorted_tsk2)
+    model.fit(X_train_procs, labels_sorted_tsk2, epochs=100, batch_size=10)
     labels_two = model.predict(X_test_procs)
-    print(labels_two.shape)
+    print(labels_two[0:100])
     return labels_two
 
 
