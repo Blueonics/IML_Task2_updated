@@ -4,6 +4,7 @@ from sklearn.decomposition import PCA
 from subtask1 import subtask1_predict
 from subtask2 import subtask2_predict
 from subtask3 import subtask3_predict
+from sklearn.preprocessing import StandardScaler
 import helper
 from zipfile import ZipFile
 import csv
@@ -28,21 +29,32 @@ X_test = X_test.reshape((num_samp_test, hours, -1))
 
 X_train_imputed = helper.imputer(X_train, df)
 X_test_imputed = helper.imputer(X_test, df_test)
+print("imputed shape", X_train_imputed.shape)
+
+# X_train_imputed, X_test_imputed = helper.pca_for_time(X_train_imputed, X_test_imputed, n_components=4)
+
+# X_train_imputed = helper.average_dim(X_train_imputed)
+# X_test_imputed = helper.average_dim(X_test_imputed)
+
 
 X_train_norm, mean, std = helper.batch_norm(X_train_imputed)
 X_test_norm = helper.batch_norm(X_test_imputed, mean, std)
 
-# X_train_flatten = X_train_imputed.reshape((X_train_imputed.shape[0], X_train_imputed.shape[1] *
-# X_train_imputed.shape[2])) X_test_flatten = X_test_imputed.reshape(X_test_imputed.shape[0], X_test_imputed.shape[1]
-# * X_test_imputed.shape[2])
-
 X_train_flatten = X_train_norm.reshape((X_train_norm.shape[0], X_train_norm.shape[1] * X_train_norm.shape[2]))
 X_test_flatten = X_test_norm.reshape(X_test_norm.shape[0], X_test_norm.shape[1] * X_test_norm.shape[2])
+print("flattened shape", X_train_flatten.shape)
 
-nn_pca = PCA(n_components=120)
-nn_pca.fit(X_train_flatten)
-X_train_procs = nn_pca.transform(X_train_flatten)
-X_test_procs = nn_pca.transform(X_test_flatten)
+# scaler = StandardScaler()
+# X_train_scaled = scaler.fit_transform(X_train_flatten)
+# X_test_scaled = scaler.fit_transform(X_test_flatten)
+
+# nn_pca = PCA(n_components=200)
+# nn_pca.fit(X_train_flatten)
+# X_train_procs = nn_pca.transform(X_train_flatten)
+# X_test_procs = nn_pca.transform(X_test_flatten)
+
+X_train_procs = X_train_flatten
+X_test_procs = X_test_flatten
 
 labels_one = subtask1_predict(X_train_procs, X_test_procs, labels)
 labels_two = subtask2_predict(X_train_procs, X_test_procs, labels)
